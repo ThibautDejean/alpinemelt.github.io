@@ -1,0 +1,23 @@
+name: Déploiement GitHub Pages avec clé API sécurisée
+
+on:
+  push:
+    branches:
+      - main  # Change cette branche si besoin
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Cloner le dépôt
+        uses: actions/checkout@v4
+
+      - name: 🔑 Injecter la clé API dans un fichier JS
+        run: echo "window.MAPS_API_KEY='${{ secrets.MAPS_API_KEY }}';" > api_key.js
+
+      - name: 🚀 Déployer sur GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: .  # Publie la racine du projet
