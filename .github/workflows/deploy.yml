@@ -21,3 +21,6 @@ jobs:
         with:
           branch: gh-pages
           folder: .  # Publie la racine du projet
+
+      - name: 🚀 Vérifier `api_key.js`
+        run: cat api_key.js
