@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte des Glaciers</title>
+    <link rel="stylesheet" href="style.css?v=1">
+    <script defer src="script.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAupnljfy3GiGLG2lyte1aQUtYP4UTbuI&callback=initMap"></script>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <div id="search-container">
+        <input type="text" id="searchBox" list="glacierList" placeholder="Rechercher un glacier">
+        <datalist id="glacierList"></datalist>
+        <button id="searchButton">Rechercher</button>
+    </div>
+
+    <div id="glacier-info" class="hidden">
+        <span id="info-name">Glacier : </span>
+        <span id="info-area">Superficie : </span>
+        <span id="info-date">Date de relevé : </span>
+    </div>
+
+    <div id="sidebar">
+        <h3>Filtres</h3>
+        <label><input type="checkbox" id="toggle-lines" checked> Lignes</label><br> 
+        <label><input type="checkbox" id="toggle-rocks"> Roches</label><br>
+        <label><input type="checkbox" id="toggle-velocity"> Vélocité</label><br>
+        <label><input type="checkbox" id="toggle-debris"> Débris</label><br>
+    
+        <h3>Année</h3>
+        <input type="range" id="year-slider" min="1850" max="2025" step="1" value="2025">
+        <span id="year-display">2025</span>
+
+        <h3>Superficie (km²)</h3>
+        <div id="size-slider-container">
+            <div class="slider-track"></div>
+            <input type="range" id="size-min" min="0" max="50" step="0.1" value="0">
+            <input type="range" id="size-max" min="0" max="50" step="0.1" value="100">
+        </div>
+        <span id="size-display">0 km² - 50 km²</span>
+    </div>
+
+</body>
+</html>
