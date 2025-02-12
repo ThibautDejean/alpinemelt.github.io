@@ -6,8 +6,12 @@ let glacierFeatures = {};
 let selectedFeature = null;
 let glacierList = d3.select("#glacierList"); 
 let velocityOverlay;
-
-
+let glacierData = {}; 
+let globalAverage = {}; 
+let xScale; 
+let yScale;
+let selectedDomain = null; 
+let glacierDataPoints = [];
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -19,6 +23,7 @@ function initMap() {
     infowindow = new google.maps.InfoWindow();
     glacierLayer = new google.maps.Data();
     glacierLayer.setMap(map);
+    
 
     d3.json("glims_alpines_recents_f.geojson").then(data => {
         glacierLayer.addGeoJson(data);
@@ -74,6 +79,31 @@ function initMap() {
             .attr("value", d => d);
     });
 
+    d3.json("glaciers_areas.json").then(data => {
+        glacierData = data;
+
+        let allDates = {}; 
+
+        Object.values(glacierData).forEach(glacier => {
+            glacier.forEach(entry => {
+                let date = entry.date;
+                if (!allDates[date]) {
+                    allDates[date] = { sum: 0, count: 0 };
+                }
+                allDates[date].sum += entry.db_area;
+                allDates[date].count += 1;
+            });
+        });
+
+        globalAverage = Object.keys(allDates).map(date => ({
+            date: date,
+            db_area: allDates[date].sum / allDates[date].count
+        }));
+
+        console.log("Données chargées :", glacierData);
+        console.log("Moyenne globale :", globalAverage);
+    });
+
     d3.select("#toggle-lines").on("change", function() {
         glacierLayer.setMap(this.checked ? map : null);
     });
@@ -86,13 +116,13 @@ function initMap() {
             if (!velocityOverlay) {
 
                 const imageBounds = {
-                    north: 47.506951,
-                    south: 44.695317,
-                    east: 13.681868,
-                    west: 6.025968,
+                    north: 47.552342,
+                    south: 44.740708,
+                    east: 13.606925,
+                    west: 5.951025,
                   };
 
-                const imageURL = "velocite_t.png";  
+                const imageURL = "velocite_t2.png";  
 
                 velocityOverlay = new google.maps.GroundOverlay(imageURL, imageBounds);
                 console.log("Overlay créé :", velocityOverlay);
@@ -117,7 +147,7 @@ function initMap() {
 
         let name = selectedFeature.getProperty("glac_name") || "Inconnu";
         let area = selectedFeature.getProperty("db_area") ? selectedFeature.getProperty("db_area").toFixed(2) + " km²" : "Non renseigné";
-        let lastSurvey = selectedFeature.getProperty("src_date") || "Date inconnue";
+        let lastSurvey = formatDate(selectedFeature.getProperty("src_date"));
 
         let content = `<div>
                          <strong>Glacier :</strong> ${name}<br>
@@ -129,8 +159,9 @@ function initMap() {
         infowindow.setPosition(event.latLng);
         infowindow.open(map);
 
-        updateGlacierInfo(name, area, lastSurvey);
+        updateGlacierInfo(name, area, lastSurvey, selectedFeature.getProperty("glac_id"));
     });
+
 
     infowindow.addListener("closeclick", () => {
         resetGlacierColors();
@@ -169,7 +200,7 @@ function initMap() {
 
                 let name = selectedFeature.getProperty("glac_name") || "Inconnu";
                 let area = selectedFeature.getProperty("db_area") ? selectedFeature.getProperty("db_area").toFixed(2) + " km²" : "Non renseigné";
-                let lastSurvey = selectedFeature.getProperty("src_date") || "Date inconnue";
+                let lastSurvey = formatDate(selectedFeature.getProperty("src_date"));
 
                 let content = `<div>
                                 <strong>Glacier :</strong> ${name}<br>
@@ -195,24 +226,6 @@ function resetGlacierColors() {
     glacierLayer.revertStyle();
 }
 
-function updateGlacierInfo(name, area, date) {
-    let infoBox = d3.select("#glacier-info");
-    let mapDiv = d3.select("#map");
-
-    if (name) {
-        d3.select("#info-name").text(`Glacier : ${name}`);
-        d3.select("#info-area").text(`Superficie : ${area}`);
-        d3.select("#info-date").text(`Date de relevé : ${date}`);
-        
-        infoBox.classed("show-info", true);
-        mapDiv.classed("map-reduced", true);
-    } else {
-        infoBox.classed("show-info", false);
-        mapDiv.classed("map-reduced", false);
-    }
-}
-
-// Fonction de filtrage 
 function filterBySize() {
     let minSize = parseFloat(d3.select("#size-min").property("value"));
     let maxSize = parseFloat(d3.select("#size-max").property("value"));
@@ -231,4 +244,256 @@ function filterBySize() {
     });
 }
 
+function loadGlacierData() {
+    d3.json("glaciers_areas.json").then(data => {
+        glacierData = data;
+
+        // Calculer la moyenne globale
+        let allDates = {}; 
+
+        Object.values(glacierData).forEach(glacier => {
+            glacier.forEach(entry => {
+                let date = entry.date;
+                if (!allDates[date]) {
+                    allDates[date] = { sum: 0, count: 0 };
+                }
+                allDates[date].sum += entry.db_area;
+                allDates[date].count += 1;
+            });
+        });
+
+        // Moyenne des glaciers à chaque date
+        globalAverage = Object.keys(allDates).map(date => ({
+            date: date,
+            db_area: allDates[date].sum / allDates[date].count
+        }));
+
+        console.log("Données chargées :", glacierData);
+        console.log("Moyenne globale :", globalAverage);
+    });
+}
+
+function updateGlacierInfo(name, area, date, glacierId = null) {
+    let infoBox = d3.select("#glacier-info");
+    let mapDiv = d3.select("#map");
+
+    if (name) {
+        d3.select("#info-name").text(`Glacier : ${name}`);
+        d3.select("#info-area").text(`Superficie : ${area}`);
+        d3.select("#info-date").text(`Date de relevé : ${date}`);
+
+        infoBox.classed("show-info", true);
+        mapDiv.classed("map-reduced", true);
+
+        if (glacierId) {
+            console.log("drawing ", glacierId)
+            drawGlacierChart(glacierId, name);
+        }
+
+    } else {
+        infoBox.classed("show-info", false);
+        mapDiv.classed("map-reduced", false);
+
+        // 🔥 Supprimer le graphe si aucun glacier sélectionné
+        d3.select("#glacier-chart").selectAll("*").remove();
+    }
+}
+
+function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
+    const margin = { top: 10, right: document.getElementById("glacier-info").clientWidth / 2, bottom: 30, left: 50 };
+    const width = document.getElementById("glacier-info").clientWidth - margin.left - margin.right;
+    const height = 100 - margin.top - margin.bottom;
+
+    d3.select("#glacier-chart").selectAll("*").remove();
+
+    const svg = d3.select("#glacier-chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("min-height", "100px")
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    let glacierDataPoints = glacierData[glacierId] || [];
+
+    if (glacierDataPoints.length === 0) {
+        console.warn("Aucune donnée trouvée pour ce glacier !");
+        return;
+    }
+
+    const parseDate = d3.timeParse("%Y-%m-%d");
+    glacierDataPoints.forEach(d => {
+        if (typeof d.date === "string" && d.date.trim() !== "") {
+            d.date = parseDate(d.date);
+        }
+    });
+
+    glacierDataPoints = glacierDataPoints.filter(d => d.date instanceof Date && !isNaN(d.date));
+
+    if (startDate && endDate) {
+        glacierDataPoints = glacierDataPoints.filter(d => d.date >= startDate && d.date <= endDate);
+    }
+
+    if (glacierDataPoints.length === 0) {
+        console.warn("Aucune donnée dans la plage sélectionnée !");
+        return;
+    }
+
+    const dateExtent = d3.extent(glacierDataPoints, d => d.date);
+    xScale = d3.scaleTime().domain(dateExtent).range([0, width]);
+
+    const yMax = d3.max(glacierDataPoints, d => d.db_area) || 1;
+    const yMin = d3.min(glacierDataPoints, d => d.db_area) || 1;
+
+    yScale = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
+
+    xAxis = (g) => g
+        .attr("class", "x-axis") 
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale).ticks(5));
+
+    yAxis = (g) => g
+        .attr("class", "y-axis")
+        .call(d3.axisLeft(yScale).ticks(5))
+
+    xGrid = (g) => g.attr("class", "grid-lines").selectAll("line").data(xScale.ticks(5)).join("line")
+        .attr("x1", d => xScale(d))
+        .attr("x2", d => xScale(d))
+        .attr("y1", 0) 
+        .attr("y2", height) 
+        .attr("stroke", "lightgray") 
+        .attr("stroke-opacity", 0.7)
+        .attr("stroke-dasharray", "3,3"); 
+
+    yGrid = (g) => g.attr("class", "grid-lines").selectAll("line").data(yScale.ticks(5)).join("line")
+        .attr("x1", 0) 
+        .attr("x2", width) 
+        .attr("y1", d => yScale(d))
+        .attr("y2", d => yScale(d))
+        .attr("stroke", "lightgray")
+        .attr("stroke-opacity", 0.7)
+        .attr("stroke-dasharray", "3,3");
+
+    svg.append('g').call(xAxis)
+    svg.append('g').call(yAxis)
+    
+    svg.append('g').call(xGrid)
+    svg.append('g').call(yGrid)
+
+    const brush = d3.brushX()
+        .extent([[0, 0], [width, height]]) 
+        .on("end", brushed);
+
+    svg.append("g").attr("class", "brush").call(brush);
+
+    const lineGlacier = d3.line()
+        .x(d => xScale(d.date))
+        .y(d => yScale(d.db_area))
+        .curve(d3.curveMonotoneX);
+
+    svg.append("path")
+        .datum(glacierDataPoints)
+        .attr("class", "line")
+        .attr("fill", "none")
+        .attr("stroke", "blue")
+        .attr("stroke-width", 2)
+        .attr("d", lineGlacier);
+
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top - 5)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "14px")
+        .text(`Évolution de la surface du ${name}`);
+
+
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height+30 )
+        .attr("text-anchor", "middle")
+        .attr("font-size", "10px")
+        .text("Année");
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -30)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "10px")
+        .text("Surface du glacier");
+    
+}
+
+function brushed(event) {
+    if (!event.selection) return;
+    selectedDomain = event.selection.map(xScale.invert);
+    console.log("Sélection en attente :", selectedDomain);
+}
+
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && selectedDomain && selectedFeature) {
+        console.log("Zoom validé :", selectedDomain);
+        applyZoom(selectedDomain);
+        selectedDomain = null;
+    }
+});
+
+function applyZoom(domain) {
+    const [x0, x1] = domain;
+
+    console.log("Application du zoom :", x0, " → ", x1);
+
+    // ✅ Vérifier si un glacier est sélectionné
+    if (!selectedFeature) {
+        console.warn("Aucun glacier sélectionné !");
+        return;
+    }
+
+    const glacierId = selectedFeature.getProperty("glac_id");
+    const name = selectedFeature.getProperty("glac_name");
+
+    console.log("Redessin du graphique pour le glacier :", name);
+
+    // ✅ Recharge entièrement le graphique avec la plage de dates sélectionnée
+    drawGlacierChart(glacierId, name, x0, x1);
+}
+
+function interpolateMissingData(data) {
+    let interpolatedData = [];
+    let lastKnownValue = null;
+
+    data.forEach((d, i) => {
+        if (d.db_area !== null) {
+            lastKnownValue = d.db_area; 
+        } else if (lastKnownValue !== null) {
+            d.db_area = lastKnownValue; 
+        }
+        interpolatedData.push(d);
+    });
+
+    return interpolatedData;
+}
+
+
+function formatDate(isoDate) {
+    if (!isoDate) return "Date inconnue"; 
+
+    let date = new Date(isoDate);
+    if (isNaN(date.getTime())) return "Date inconnue";
+
+    const moisFrancais = [
+        "janvier", "février", "mars", "avril", "mai", "juin",
+        "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+    ];
+
+    let jour = date.getDate(); 
+    let mois = moisFrancais[date.getMonth()]; 
+    let annee = date.getFullYear(); 
+
+    return `${jour} ${mois} ${annee}`;
+}
+
+
+
 window.initMap = initMap;
+
+
