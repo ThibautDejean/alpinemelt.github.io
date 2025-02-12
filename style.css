@@ -168,3 +168,14 @@ body, html {
     stroke-opacity: 0.7;
     shape-rendering: crispEdges;
 }
+
+#version-info {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: gray;
+    text-align: center;
+    width: 100%;
+}
