@@ -143,7 +143,7 @@ body, html {
 .gm-style img {
     display: block !important;
     opacity: 1 !important;
-    z-index: 1000 !important; /* Forcer l'image à être au-dessus */
+    z-index: 1000 !important; 
 }
 
 #velocity-overlay {

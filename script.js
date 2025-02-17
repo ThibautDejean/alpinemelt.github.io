@@ -99,9 +99,6 @@ function initMap() {
             date: date,
             db_area: allDates[date].sum / allDates[date].count
         }));
-
-        console.log("Données chargées :", glacierData);
-        console.log("Moyenne globale :", globalAverage);
     });
 
     d3.select("#toggle-lines").on("change", function() {
@@ -116,19 +113,24 @@ function initMap() {
             if (!velocityOverlay) {
 
                 const imageBounds = {
-                    north: 47.552342,
-                    south: 44.740708,
-                    east: 13.606925,
-                    west: 5.951025,
+                    north: 47.612951,
+                    south: 44.701317,
+                    east: 13.601868,
+                    west: 5.945968,
                   };
 
-                const imageURL = "velocite_t2.png";  
+                const original_Bounds = {
+                    north:  47.506951 ,
+                    south: 44.695317,
+                    east: 13.681868,
+                    west: 6.025968,
+                };
+
+                const imageURL = "velocite_t2p.png";  
 
                 velocityOverlay = new google.maps.GroundOverlay(imageURL, imageBounds);
-                console.log("Overlay créé :", velocityOverlay);
             }
             velocityOverlay.setMap(map);  
-            console.log("Overlay ajouté à la carte :", velocityOverlay.getMap());
 
         } else {
             if (velocityOverlay) {
@@ -191,10 +193,6 @@ function initMap() {
 
                 let position = glacierLocations[query];
 
-                console.log("Query:", query);
-                console.log("Glacier Location:", glacierLocations[query]);
-                console.log("Glacier Locations :", glacierLocations)
-
                 map.setCenter(position);
                 map.setZoom(11); 
 
@@ -211,8 +209,9 @@ function initMap() {
                 infowindow.setContent(content);
                 infowindow.setPosition(position);
                 infowindow.open(map);
-
-                updateGlacierInfo(name, area, lastSurvey);
+                
+                console.log("searching")
+                updateGlacierInfo(name, area, lastSurvey, selectedFeature.getProperty("glac_id"));
             } else {
                 alert("Erreur : Impossible de récupérer les informations du glacier.");
             }
@@ -267,15 +266,14 @@ function loadGlacierData() {
             date: date,
             db_area: allDates[date].sum / allDates[date].count
         }));
-
-        console.log("Données chargées :", glacierData);
-        console.log("Moyenne globale :", globalAverage);
     });
 }
 
 function updateGlacierInfo(name, area, date, glacierId = null) {
     let infoBox = d3.select("#glacier-info");
     let mapDiv = d3.select("#map");
+
+    console.log(glacierId)
 
     if (name) {
         d3.select("#info-name").text(`Glacier : ${name}`);
@@ -286,7 +284,6 @@ function updateGlacierInfo(name, area, date, glacierId = null) {
         mapDiv.classed("map-reduced", true);
 
         if (glacierId) {
-            console.log("drawing ", glacierId)
             drawGlacierChart(glacierId, name);
         }
 
@@ -294,7 +291,6 @@ function updateGlacierInfo(name, area, date, glacierId = null) {
         infoBox.classed("show-info", false);
         mapDiv.classed("map-reduced", false);
 
-        // 🔥 Supprimer le graphe si aucun glacier sélectionné
         d3.select("#glacier-chart").selectAll("*").remove();
     }
 }
@@ -426,12 +422,10 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 function brushed(event) {
     if (!event.selection) return;
     selectedDomain = event.selection.map(xScale.invert);
-    console.log("Sélection en attente :", selectedDomain);
 }
 
 document.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && selectedDomain && selectedFeature) {
-        console.log("Zoom validé :", selectedDomain);
         applyZoom(selectedDomain);
         selectedDomain = null;
     }
@@ -439,8 +433,6 @@ document.addEventListener("keydown", function (event) {
 
 function applyZoom(domain) {
     const [x0, x1] = domain;
-
-    console.log("Application du zoom :", x0, " → ", x1);
 
     // ✅ Vérifier si un glacier est sélectionné
     if (!selectedFeature) {
@@ -450,8 +442,6 @@ function applyZoom(domain) {
 
     const glacierId = selectedFeature.getProperty("glac_id");
     const name = selectedFeature.getProperty("glac_name");
-
-    console.log("Redessin du graphique pour le glacier :", name);
 
     // ✅ Recharge entièrement le graphique avec la plage de dates sélectionnée
     drawGlacierChart(glacierId, name, x0, x1);
@@ -472,7 +462,6 @@ function interpolateMissingData(data) {
 
     return interpolatedData;
 }
-
 
 function formatDate(isoDate) {
     if (!isoDate) return "Date inconnue"; 
