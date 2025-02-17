@@ -427,7 +427,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
         .attr("y", -40) 
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
-        .text("Surface du glacier");
+        .text("Surface (km2)");
 }
 
 
