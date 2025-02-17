@@ -306,20 +306,19 @@ function updateGlacierInfo(name, area, date, glacierId = null) {
 
 
 function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
-    const margin = { top: 30, right: document.getElementById("glacier-info").clientWidth / 2, bottom: 40, left: 50 }; 
+    const margin = { top: 50, right: document.getElementById("glacier-info").clientWidth / 2, bottom: 50, left: 50 }; 
     const width = document.getElementById("glacier-info").clientWidth - margin.left - margin.right;
-    const height = 100 - margin.top - margin.bottom;
-
-    const totalHeight = height + margin.top + margin.bottom + 20; 
+    const height = 80;
+    const totalHeight = height + margin.top + margin.bottom + 50;
 
     d3.select("#glacier-chart").selectAll("*").remove();
 
     const svg = d3.select("#glacier-chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", totalHeight) 
-        .style("min-height", "120px")
+        .style("min-height", "200px")
         .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top + 10})`); // Move down for better spacing
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     let glacierDataPoints = glacierData[glacierId] || [];
 
@@ -361,7 +360,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 
     yAxis = (g) => g
         .attr("class", "y-axis")
-        .call(d3.axisLeft(yScale).ticks(3));
+        .call(d3.axisLeft(yScale).ticks(5));
 
     xGrid = (g) => g.attr("class", "grid-lines").selectAll("line").data(xScale.ticks(5)).join("line")
         .attr("x1", d => xScale(d))
@@ -408,7 +407,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", -15)
+        .attr("y", -10) // ✅ Encore plus haut
         .attr("text-anchor", "middle")
         .attr("font-size", "14px")
         .attr("font-weight", "bold")
@@ -416,18 +415,21 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", height + 35)
+        .attr("y", height + 30) 
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
-        .text("Année");
+        .html(`
+            <tspan>Année -</tspan>
+            <tspan dx="5" font-style="italic">Cliquez, faites glisser et tapez Entrée pour sélectionner une période</tspan>
+        `);
 
-    svg.append("text")
+        svg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -40) 
+        .attr("y", -30) 
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
-        .text("Surface (km2)");
+        .text("Surface (km²)");
 }
 
 
