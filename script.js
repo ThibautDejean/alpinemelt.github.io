@@ -79,7 +79,7 @@ function initMap() {
             .attr("value", d => d);
     });
 
-    d3.json("glaciers_areas.json").then(data => {
+    d3.json("glaciers_areas_f2.json").then(data => {
         glacierData = data;
 
         let allDates = {}; 

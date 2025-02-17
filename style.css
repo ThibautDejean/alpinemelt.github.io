@@ -34,7 +34,7 @@ body, html {
 
 #search-container {
     position: absolute;
-    top: 10px;
+    top: 50px;
     left: 50%;
     transform: translateX(-50%);
     background: white;
@@ -178,4 +178,13 @@ body, html {
     color: gray;
     text-align: center;
     width: 100%;
+}
+
+#header {
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 24px;
+    font-weight: bold;
 }
