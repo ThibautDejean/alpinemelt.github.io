@@ -25,7 +25,7 @@ function initMap() {
     glacierLayer.setMap(map);
     
 
-    d3.json("glims_alpines_recents_f.geojson").then(data => {
+    d3.json("filtered_glims_alpines_recents_f.geojson").then(data => {
         glacierLayer.addGeoJson(data);
 
         glacierLayer.setStyle({
