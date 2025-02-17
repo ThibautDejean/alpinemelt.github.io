@@ -23,6 +23,15 @@ function initMap() {
     infowindow = new google.maps.InfoWindow();
     glacierLayer = new google.maps.Data();
     glacierLayer.setMap(map);
+
+    // Get slider and display elements
+    const slider = document.getElementById("year-slider");
+    const display = document.getElementById("year-display");
+
+    // Update the year display dynamically
+    slider.addEventListener("input", function () {
+        display.textContent = this.value;
+});
     
 
     d3.json("filtered_glims_alpines_recents_f.geojson").then(data => {
@@ -480,7 +489,6 @@ function formatDate(isoDate) {
 
     return `${jour} ${mois} ${annee}`;
 }
-
 
 
 window.initMap = initMap;
