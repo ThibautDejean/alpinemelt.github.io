@@ -304,19 +304,22 @@ function updateGlacierInfo(name, area, date, glacierId = null) {
     }
 }
 
+
 function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
-    const margin = { top: 10, right: document.getElementById("glacier-info").clientWidth / 2, bottom: 30, left: 50 };
+    const margin = { top: 30, right: document.getElementById("glacier-info").clientWidth / 2, bottom: 40, left: 50 }; 
     const width = document.getElementById("glacier-info").clientWidth - margin.left - margin.right;
     const height = 100 - margin.top - margin.bottom;
+
+    const totalHeight = height + margin.top + margin.bottom + 20; 
 
     d3.select("#glacier-chart").selectAll("*").remove();
 
     const svg = d3.select("#glacier-chart")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .style("min-height", "100px")
+        .attr("height", totalHeight) 
+        .style("min-height", "120px")
         .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+        .attr("transform", `translate(${margin.left}, ${margin.top + 10})`); // Move down for better spacing
 
     let glacierDataPoints = glacierData[glacierId] || [];
 
@@ -358,7 +361,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 
     yAxis = (g) => g
         .attr("class", "y-axis")
-        .call(d3.axisLeft(yScale).ticks(5))
+        .call(d3.axisLeft(yScale).ticks(3));
 
     xGrid = (g) => g.attr("class", "grid-lines").selectAll("line").data(xScale.ticks(5)).join("line")
         .attr("x1", d => xScale(d))
@@ -378,11 +381,11 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
         .attr("stroke-opacity", 0.7)
         .attr("stroke-dasharray", "3,3");
 
-    svg.append('g').call(xAxis)
-    svg.append('g').call(yAxis)
+    svg.append('g').call(xAxis);
+    svg.append('g').call(yAxis);
     
-    svg.append('g').call(xGrid)
-    svg.append('g').call(yGrid)
+    svg.append('g').call(xGrid);
+    svg.append('g').call(yGrid);
 
     const brush = d3.brushX()
         .extent([[0, 0], [width, height]]) 
@@ -405,15 +408,15 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", margin.top - 5)
+        .attr("y", -15)
         .attr("text-anchor", "middle")
         .attr("font-size", "14px")
+        .attr("font-weight", "bold")
         .text(`Évolution de la surface du ${name}`);
-
 
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", height+30 )
+        .attr("y", height + 35)
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .text("Année");
@@ -421,12 +424,12 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
     svg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -30)
+        .attr("y", -40) 
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .text("Surface du glacier");
-    
 }
+
 
 function brushed(event) {
     if (!event.selection) return;
