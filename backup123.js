@@ -15,7 +15,7 @@ let glacierDataPoints = [];
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 46.044870, lng: 10.251466 }, 
+        center: { lat: 45.9237, lng: 6.8694 },
         zoom: 7,
         mapTypeId: "satellite",
     });
@@ -32,78 +32,60 @@ function initMap() {
     slider.addEventListener("input", function () {
         display.textContent = this.value;
 });
-
-    let geoJsonFile = (slider.value === "2025") 
-            ? "filtered_glims_alpines_recents_f.geojson"  
-            : `glacier_years/glaciers_${slider.value}.geojson`;   
     
-    function loadGlacierData(year) {
-        let geoJsonFile = (year === "2025") 
-            ? "filtered_glims_alpines_recents_f.geojson"  
-            : `glacier_years/glaciers_${year}.geojson`;   
 
-        glacierLayer.forEach(feature => glacierLayer.remove(feature));
+    d3.json("filtered_glims_alpines_recents_f.geojson").then(data => {
+        glacierLayer.addGeoJson(data);
 
-        d3.json(geoJsonFile).then(data => {
-            glacierLayer.addGeoJson(data);
+        glacierLayer.setStyle({
+            fillColor: "blue",
+            strokeColor: "black",
+            strokeWeight: 1,
+            fillOpacity: 0.5
+        });
 
-            glacierLayer.setStyle({
-                fillColor: "blue",
-                strokeColor: "black",
-                strokeWeight: 1,
-                fillOpacity: 0.5
-            });
+        let glacierNames = [];
+        data.features.forEach(feature => {
+            let name = feature.properties.glac_name;
+            if (name) {
+                let geometry = feature.geometry;
+                let latLng;
 
-            let glacierNames = [];
-            data.features.forEach(feature => {
-                let name = feature.properties.glac_name;
-                if (name) {
-                    let geometry = feature.geometry;
-                    let latLng;
-
-                    if (geometry.type === "Polygon" || geometry.type === "MultiPolygon") {
-                        let latSum = 0, lngSum = 0, count = 0;
-                    
-                        geometry.coordinates.forEach(polygon => {
-                            polygon.forEach(coord => { 
-                                let lng = parseFloat(coord[0]); 
-                                let lat = parseFloat(coord[1]); 
-                    
-                                if (!isNaN(lat) && !isNaN(lng)) {
-                                    latSum += lat;
-                                    lngSum += lng;
-                                    count++;
-                                }
-                            });
+                if (geometry.type === "Polygon" || geometry.type === "MultiPolygon") {
+                    let latSum = 0, lngSum = 0, count = 0;
+                
+                    geometry.coordinates.forEach(polygon => {
+                        polygon.forEach(coord => { 
+                            let lng = parseFloat(coord[0]); 
+                            let lat = parseFloat(coord[1]); 
+                
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                latSum += lat;
+                                lngSum += lng;
+                                count++;
+                            }
                         });
-                    
-                        if (count > 0) {
-                            latLng = new google.maps.LatLng(latSum / count, lngSum / count); 
-                        }
-                    } else if (geometry.type === "Point") {
-                        latLng = new google.maps.LatLng(geometry.coordinates[1], geometry.coordinates[0]);
+                    });
+                
+                    if (count > 0) {
+                        latLng = new google.maps.LatLng(latSum / count, lngSum / count); 
                     }
-
-                    glacierLocations[name.toLowerCase()] = latLng;
-                    glacierFeatures[name.toLowerCase()] = feature;
-                    glacierNames.push(name);
+                } else if (geometry.type === "Point") {
+                    latLng = new google.maps.LatLng(geometry.coordinates[1], geometry.coordinates[0]);
                 }
-            });
 
-            glacierNames.sort();
-            glacierList.selectAll("option")
-                .data(glacierNames)
-                .enter()
-                .append("option")
-                .attr("value", d => d);
-        }).catch(error => console.error(`Error loading ${geoJsonFile}:`, error));
-    }
-        
-    loadGlacierData(slider.value);
+                glacierLocations[name.toLowerCase()] = latLng;
+                glacierFeatures[name.toLowerCase()] = feature;
+                glacierNames.push(name);
+            }
+        });
 
-    slider.addEventListener("input", function () {
-        display.textContent = this.value;
-        loadGlacierData(this.value); // Dynamically load new glacier data
+        glacierNames.sort();
+        glacierList.selectAll("option")
+            .data(glacierNames)
+            .enter()
+            .append("option")
+            .attr("value", d => d);
     });
 
     d3.json("glaciers_areas_f2.json").then(data => {
@@ -153,7 +135,7 @@ function initMap() {
                     west: 6.025968,
                 };
 
-                const imageURL = "v_log.png";  
+                const imageURL = "velocite_t2p.png";  
 
                 velocityOverlay = new google.maps.GroundOverlay(imageURL, imageBounds);
             }
@@ -424,7 +406,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
 
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", -10) // ✅ Encore plus haut
+        .attr("y", -10) 
         .attr("text-anchor", "middle")
         .attr("font-size", "14px")
         .attr("font-weight", "bold")
@@ -436,7 +418,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .html(`
-            <tspan>Année -</tspan>
+            <tspan>Année    -</tspan>
             <tspan dx="5" font-style="italic">Cliquez, faites glisser et tapez Entrée pour sélectionner une période</tspan>
         `);
 
@@ -448,6 +430,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
         .attr("font-size", "10px")
         .text("Surface (km²)");
 }
+
 
 function brushed(event) {
     if (!event.selection) return;
@@ -511,6 +494,6 @@ function formatDate(isoDate) {
     return `${jour} ${mois} ${annee}`;
 }
 
-window.initMap = initMap;
 
+window.initMap = initMap;
 

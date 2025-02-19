@@ -88,7 +88,6 @@ body, html {
     bottom: 0 !important;
 }
 
-
 #size-slider-container {
     position: relative;
     width: 100%;
@@ -187,4 +186,20 @@ body, html {
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
     font-size: 16px;
     font-weight: bold;
+}
+
+
+#colorbar-container {
+    display: none; /* Caché par défaut */
+    text-align: center;
+    width: 100%; /* Prend toute la largeur de la sidebar */
+    margin-top: 5px;
+}
+
+#colorbar {
+    width: 90%; /* Ajuste la largeur pour ne pas toucher les bords */
+    max-width: 140px; /* Taille max */
+    height: auto; /* Garde les proportions */
+    display: block;
+    margin: 0 auto;
 }
