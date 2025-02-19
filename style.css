@@ -191,16 +191,18 @@ body, html {
 
 
 #colorbar-container {
-    display: none; /* Caché par défaut */
     text-align: center;
     width: 100%; /* Prend toute la largeur de la sidebar */
     margin-top: 5px;
 }
 
 #colorbar {
-    width: 90%; /* Ajuste la largeur pour ne pas toucher les bords */
-    max-width: 140px; /* Taille max */
+    width: 170%; /* Ajuste la largeur pour ne pas toucher les bords */
+    max-width: 400px; /* Taille max */
     height: auto; /* Garde les proportions */
-    display: block;
     margin: 0 auto;
+    display: block;
+
+    clip-path: inset(0 0 0 40%);
+    margin-left: -70%;
 }
