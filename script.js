@@ -322,6 +322,7 @@ function updateGlacierInfo(name, area, date, glacierId = null) {
     }
 }
 
+
 function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
     const margin = { top: 50, right: document.getElementById("glacier-info").clientWidth / 2, bottom: 50, left: 50 }; 
     const width = document.getElementById("glacier-info").clientWidth - margin.left - margin.right;
@@ -448,6 +449,7 @@ function drawGlacierChart(glacierId, name, startDate = null, endDate = null) {
         .attr("font-size", "10px")
         .text("Surface (km²)");
 }
+
 
 function brushed(event) {
     if (!event.selection) return;
