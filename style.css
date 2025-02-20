@@ -9,6 +9,7 @@ body, html {
 
 #sidebar {
     position: absolute;
+    text-align: center;
     right: 0;
     top: 0;
     width: 200px;
@@ -205,3 +206,50 @@ body, html {
     clip-path: inset(0 0 0 40%);
     margin-left: -70%;
 }
+
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.info-icon {
+    cursor: pointer;
+    font-size: 14px;
+    color: black;
+    font-weight: bold;
+    position: relative;
+}
+
+.info-icon:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    top: 120%; /* ✅ Fait apparaître la bulle en dessous */
+    transform: translateX(-50%);
+    width: 200px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    text-align: center;
+    white-space: normal;
+    display: block;
+    z-index: 10;
+}
+
+.info-icon:hover::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 110%; /* ✅ Ajuste la position de la flèche */
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.9); /* ✅ Pointe vers l'icône */
+}
+
+
+
+
