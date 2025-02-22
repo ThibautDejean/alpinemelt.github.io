@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte des Glaciers</title>
     <link rel="stylesheet" href="style.css">
-    <script defer src="script1.js"></script>
+    <script defer src="script2.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAupnljfy3GiGLG2lyte1aQUtYP4UTbuI&callback=initMap"></script>
 </head>
 <body>
     <div id="header">
-        <h1>Carte des Glaciers Alpins</h1>
+        <h1>Fonte des Glaciers Alpins</h1>
     </div>
     <div id="map"></div>
 
@@ -22,9 +22,13 @@
     </div>
 
     <div id="glacier-info" class="hidden">
-        <span id="info-name">Glacier : </span>
-        <span id="info-area">Superficie : </span>
-        <span id="info-date">Date de relevé : </span>
+        <div id = "glacier-info-left">
+            <span id="info-name">Glacier : </span>
+            <div class="info-divider"></div>
+            <span id="info-area">Superficie : </span>
+            <div class="info-divider"></div>
+            <span id="info-date">Date de relevé : </span>
+        </div>
         <svg id="glacier-chart"></svg>
     </div>
 
@@ -34,9 +38,6 @@
             <label><input type="checkbox" id="toggle-lines" checked> Lignes</label>
             <span class="info-icon" data-tooltip="Contours des glaciers pour l'année sélectionnée, identifiés par relevés satellites.">🛈</span>
         </div>
-
-        <input type="range" id="year-slider" min="1900" max="2025" step="1" value="2025">
-        <span id="year-display">2025</span>
 
         <div class="filter-item">
             <label><input type="checkbox" id="toggle-rocks"> Roches</label>
@@ -57,6 +58,13 @@
             <img id="colorbar" src="colorbar_only.png" alt="Échelle de Vélocité">
         </div>
 
+        <input type="range" id="year-slider" min="1900" max="2025" step="1" value="2025">
+        <span id="year-display">2025</span>
+
+        <div id="glacier_image">
+            <img id="glac_img" src="glac_img.jpg" alt="">
+        </div>
+
         <!-- <h3>Superficie (km²)</h3>
         <div id="size-slider-container">
             <div class="slider-track"></div>
@@ -65,9 +73,9 @@
         </div>
         <span id="size-display">0 km² - 50 km²</span> -->
 
-        <div id="version-info">
+        <!-- <div id="version-info">
             Version : <span id="site-version">2.1.3 - linechart</span>
-        </div>
+        </div> -->
     </div>
 
 </body>
