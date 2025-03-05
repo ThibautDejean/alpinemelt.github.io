@@ -25,21 +25,19 @@ body, html {
 }
 
 #sidebar h1, #sidebar h3, #sidebar label, #sidebar span {
-    margin-bottom: 12px; /* ✅ Augmente l'espace en dessous des titres et labels */
+    margin-bottom: 12px; 
     display: block;
 }
 
-/* ✅ Conteneur pour limiter les infos et les séparateurs à gauche */
 #glacier-info-left {
     position : absolute;
     left:0px;
     display: flex;
-    width: 35%; /* ✅ Limite l’espace des infos */
+    width: 35%; 
     justify-content: space-around;
     align-items: center;
 }
 
-/* ✅ Chaque bloc de texte prend un espace égal */
 .info-block {
     text-align: center;
     font-size: 16px;
@@ -48,7 +46,6 @@ body, html {
     max-width: 30%;
 }
 
-/* ✅ Séparateurs fins entre les blocs */
 .info-divider {
     width: 1px;
     height: 60%;
@@ -83,7 +80,7 @@ body, html {
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     display: flex;
     height: 40px;
-    width: 400px; /* Augmente la largeur totale */
+    width: 400px; 
 }
 
 #searchBox {
@@ -103,7 +100,7 @@ body, html {
 
 #glacier-info {
     position: fixed;
-    bottom: -200px; /* Caché hors écran */
+    bottom: -200px; 
     left: 0;
     width: 100%;
     background: white;
@@ -114,7 +111,7 @@ body, html {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 15vh; /* Hauteur dynamique */
+    height: 15vh;
     transition: bottom 0.3s ease-in-out;
     z-index: 20;
 }
@@ -222,7 +219,7 @@ body, html {
 }
 
 #header {
-    background: url('12.jpeg') center/cover no-repeat; /* ✅ Ajoute l'image en arrière-plan */
+    background: url('12.jpeg') center/cover no-repeat; 
     padding: 20px;
     height:80px;
     text-align: center;
@@ -230,7 +227,7 @@ body, html {
     font-size: 22px;
     font-weight: bold;
     position: relative;
-    color: white;  /* ✅ Change la couleur du texte si besoin */
+    color: white; 
 }
 
 #header::after {
@@ -239,7 +236,7 @@ body, html {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 10px; /* ✅ Ajuste la hauteur du fondu */
+    height: 10px; 
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 1));
     pointer-events: none;
 }
@@ -247,14 +244,14 @@ body, html {
 
 #colorbar-container {
     text-align: center;
-    width: 100%; /* Prend toute la largeur de la sidebar */
+    width: 100%; 
     margin-top: 5px;
 }
 
 #colorbar {
-    width: 170%; /* Ajuste la largeur pour ne pas toucher les bords */
-    max-width: 400px; /* Taille max */
-    height: auto; /* Garde les proportions */
+    width: 170%; 
+    max-width: 400px; 
+    height: auto; 
     margin: 0 auto;
     display: block;
     clip-path: inset(0 0 0 40%);
@@ -280,7 +277,7 @@ body, html {
     content: attr(data-tooltip);
     position: absolute;
     left: 50%;
-    top: 120%; /* ✅ Fait apparaître la bulle en dessous */
+    top: 120%; 
     transform: translateX(-50%);
     width: 200px;
     background: rgba(0, 0, 0, 0.9);
@@ -298,23 +295,23 @@ body, html {
     content: "";
     position: absolute;
     left: 50%;
-    top: 110%; /* ✅ Ajuste la position de la flèche */
+    top: 110%; 
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.9); /* ✅ Pointe vers l'icône */
+    border-bottom-color: rgba(0, 0, 0, 0.9); 
 }
 
 #glacier-image {
     text-align: center;
     width: 100%; 
     margin-top: 5px;
-    overflow: hidden; /* ✅ Empêche l'image de dépasser */
+    overflow: hidden;
 }
 
 #glac_img {
-    width: 100%;  /* ✅ Réduit la taille de l’image à 80% de la sidebar */
-    max-width: 200px; /* ✅ Limite la largeur maximale */
-    height: auto; /* ✅ Garde les proportions de l’image */
+    width: 100%; 
+    max-width: 200px; 
+    height: auto;
     display: block;
-    margin: 10px auto; /* ✅ Centre l’image avec un petit espace autour */
+    margin: 10px auto;
 }
